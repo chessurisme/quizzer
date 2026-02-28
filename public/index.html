@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Manager</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Libre+Baskerville:ital@1&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Third-party libraries are bundled by Vite; no CDN scripts needed -->
+
+    <!-- Styles -->
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" href="./assets/favicons/ios/32.png" type="image/png" sizes="32x32">
+    <link rel="icon" href="./assets/favicons/ios/16.png" type="image/png" sizes="16x16">
+    <link rel="apple-touch-icon" href="./assets/favicons/ios/180.png">
+    <script type="module" crossorigin src="./assets/index-BNrkoUmN.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-D5ASaEOi.css">
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar Backdrop -->
+      <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="uiController.hideSidebar()"></div>
+      <!-- Sidebar -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <h2 class="sidebar-logo">Quiz Manager</h2>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-label">Folders</div>
+          <div class="folder-item" onclick="folderController.createNewFolder()">
+            <i data-lucide="folder-plus" width="20" height="20"></i>
+            <span>New Folder</span>
+          </div>
+          <div id="folderList"></div>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-label">Recent</div>
+          <div id="recentQuizList"></div>
+        </div>
+      </aside>
+
+      <!-- Main App -->
+      <div id="app">
+        <!-- Home Page -->
+        <div id="homePage" class="page home-page">
+          <header class="header">
+            <button class="icon-button" onclick="uiController.toggleSidebar()">
+              <i data-lucide="menu" width="24" height="24"></i>
+            </button>
+            <h1 class="header-title">Quiz Manager</h1>
+            <button class="icon-button" onclick="routerController.goToSettings()">
+              <i data-lucide="settings" width="24" height="24"></i>
+            </button>
+          </header>
+
+          <main class="main-content">
+            <div class="home-container">
+              <div>
+                <h1 class="welcome-title">Welcome to Quiz Manager</h1>
+                <p>Create, manage, and play your biblical quizzes</p>
+              </div>
+
+              <div class="search-bar">
+                <input type="text" placeholder="Search quizzes..." id="searchInput" />
+                <button onclick="searchController.performSearch()">
+                  <i data-lucide="search" width="20" height="20"></i>
+                </button>
+              </div>
+
+              <div class="action-buttons">
+                <button class="btn-secondary" onclick="uiController.openImportModal()">
+                  <i data-lucide="upload" width="20" height="20"></i>
+                  Import
+                </button>
+                <button class="btn-secondary" onclick="uiController.openCreateModal()">
+                  <i data-lucide="plus-circle" width="20" height="20"></i>
+                  Create
+                </button>
+                <button class="btn-secondary" onclick="uiController.openPlayModal()">
+                  <i data-lucide="play-circle" width="20" height="20"></i>
+                  Play
+                </button>
+                <button class="btn-secondary hidden" id="backToUnsavedBtn" onclick="quizController.backToUnsaved()">
+                  <i data-lucide="arrow-left" width="20" height="20"></i>
+                  Back to Unsaved Quiz
+                </button>
+              </div>
+            </div>
+          </main>
+        </div>
+
+        <!-- Folder Page -->
+        <div id="folderPage" class="page hidden">
+          <header class="header">
+            <button class="icon-button" onclick="routerController.goToHome()">
+              <i data-lucide="arrow-left" width="24" height="24"></i>
+            </button>
+            <h1 class="header-title" id="folderPageTitle">Folder</h1>
+            <span></span>
+          </header>
+          <main class="main-content">
+            <div id="folderQuizList"></div>
+          </main>
+        </div>
+
+        <!-- Search Page -->
+        <div id="searchPage" class="page hidden">
+          <header class="header">
+            <button class="icon-button" onclick="routerController.goToHome()">
+              <i data-lucide="arrow-left" width="24" height="24"></i>
+            </button>
+            <h1 class="header-title">Search Results</h1>
+            <span></span>
+          </header>
+          <main class="main-content">
+            <div class="search-info">
+              <div class="search-query">
+                <i data-lucide="search" width="16" height="16"></i>
+                <span id="searchQueryText">Search results</span>
+              </div>
+              <div class="search-stats">
+                <span id="searchResultsCount">0 results found</span>
+              </div>
+            </div>
+            <div id="searchResultsList"></div>
+          </main>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settingsPage" class="page hidden">
+          <header class="header">
+            <button class="icon-button" onclick="uiController.exitSettings()">
+              <i data-lucide="arrow-left" width="24" height="24"></i>
+            </button>
+            <h1 class="header-title">Settings</h1>
+          </header>
+
+          <main class="main-content">
+            <div class="settings-layout">
+                             <aside class="settings-sidebar">
+                 <div class="sidebar-label" style="margin-bottom: var(--size-s);">General</div>
+                 <div class="folder-item" onclick="uiController.openSettingsTheme()">
+                   <i data-lucide="paintbrush" width="20" height="20"></i>
+                   <span>Theme</span>
+                 </div>
+                 <div class="folder-item" onclick="uiController.openSettingsData()">
+                   <i data-lucide="database" width="20" height="20"></i>
+                   <span>Data Management</span>
+                 </div>
+                 
+                 <div class="sidebar-label" style="margin: var(--size-base) 0 var(--size-s) 0;">Others</div>
+                 <div class="folder-item" onclick="uiController.openSettingsHelp()">
+                   <i data-lucide="help-circle" width="20" height="20"></i>
+                   <span>Help</span>
+                 </div>
+                 <div class="folder-item" onclick="uiController.openSettingsAbout()">
+                   <i data-lucide="info" width="20" height="20"></i>
+                   <span>About</span>
+                 </div>
+               </aside>
+              <section class="settings-placeholder"></section>
+            </div>
+          </main>
+        </div>
+
+        <!-- Quiz Editor Page -->
+        <div id="quizEditor" class="quiz-editor">
+          <header class="quiz-editor-header">
+            <button class="icon-button" onclick="quizController.exitEditor()">
+              <i data-lucide="arrow-left" width="24" height="24"></i>
+            </button>
+            <h2 class="quiz-editor-title" id="quizEditorTitle">Quiz Editor</h2>
+            <span id="scoreBadge" class="hidden">Score: 0/0</span>
+            <div id="lockIndicator" class="lock-indicator hidden"></div>
+            <button class="icon-button" id="saveBtn" onclick="quizController.saveQuiz()">
+              <i data-lucide="save" width="24" height="24"></i>
+            </button>
+            <button class="icon-button" id="optionsBtn" onclick="uiController.openQuizOptions()">
+              <i data-lucide="ellipsis" width="24" height="24"></i>
+            </button>
+          </header>
+
+          <div class="quiz-editor-content">
+            <div class="quiz-index" id="quizIndex">
+              <button class="icon-button" id="questionProgressBtn" onclick="uiController.actionQuizJump()" title="Jump to question"></button>
+            </div>
+            <div id="quizContent"></div>
+          </div>
+
+          <footer class="quiz-editor-footer">
+            <button class="icon-button" id="prevBtn" onclick="quizController.previousQuestion()">
+              <i data-lucide="chevron-left" width="24" height="24"></i>
+            </button>
+            <button class="icon-button" id="addBtn" onclick="quizController.addQuestion()">
+              <i data-lucide="plus" width="24" height="24"></i>
+            </button>
+            <button class="icon-button hidden" id="submitBtn" onclick="playController.submitAnswer()">
+              <i data-lucide="check-circle" width="24" height="24"></i>
+            </button>
+            <button class="icon-button" id="nextBtn" onclick="quizController.nextQuestion()">
+              <i data-lucide="chevron-right" width="24" height="24"></i>
+            </button>
+          </footer>
+        </div>
+
+        <!-- Quiz Results Page -->
+        <div id="quizResultsPage" class="page hidden">
+          <header class="header">
+            <h1 class="header-title">Quiz Results</h1>
+          </header>
+          <main class="main-content">
+            <div class="results-container">
+              <div class="results-header">
+                <h2 id="resultsTitle">Quiz Complete!</h2>
+                <div class="score-display">
+                  <span id="finalScore">0/0</span>
+                </div>
+              </div>
+              <div class="results-summary">
+                <div class="summary-stats">
+                  <div class="stat-item">
+                    <i data-lucide="check-circle" width="20" height="20"></i>
+                    <span id="correctCount">0</span> Correct
+                  </div>
+                  <div class="stat-item">
+                    <i data-lucide="x-circle" width="20" height="20"></i>
+                    <span id="incorrectCount">0</span> Incorrect
+                  </div>
+                </div>
+              </div>
+              <div class="results-actions">
+                <button class="btn-secondary" onclick="playController.retakeQuiz()">
+                  <i data-lucide="refresh-cw" width="20" height="20"></i>
+                  Retake Quiz
+                </button>
+                <button class="btn-primary" onclick="playController.exitToHome()">
+                  <i data-lucide="home" width="20" height="20"></i>
+                  Exit to Home
+                </button>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+
+      <!-- Batch Import Result Modal -->
+      <div class="modal-overlay" id="batchImportResultModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Imported Quizzes</h3>
+            <button class="icon-button" onclick="uiController.closeModal('batchImportResultModal')">
+              <i data-lucide="x" width="24" height="24"></i>
+            </button>
+          </div>
+          <div class="modal-content">
+            <p id="batchImportSummaryText" style="margin-bottom: 12px;">0 imported.</p>
+            <div class="quiz-field">
+              <div class="quiz-field-label">Place imported quizzes into a folder (recommended)</div>
+              <select id="batchImportFolderSelect" style="width:100%; padding:10px; background: var(--color-background); color: var(--color-text-strong); border:1px solid var(--color-stroke-weak); border-radius:8px;">
+                <option value="">No Folder</option>
+              </select>
+              <div style="display:flex; gap: 8px; align-items:center; margin-top:8px;">
+                <button class="btn-secondary" onclick="uiController.batchImportOpenCreateFolder()">
+                  <i data-lucide="folder-plus" width="16" height="16"></i>
+                  New Folder
+                </button>
+                <span style="font-size:12px; opacity:.8;">Tip: Put batches in one folder to stay organized.</span>
+              </div>
+            </div>
+            <div class="modal-actions">
+              <button class="btn-secondary" onclick="uiController.closeModal('batchImportResultModal')">Skip</button>
+              <button class="btn-primary" onclick="uiController.confirmBatchImportAssign()">Assign to Folder</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modals -->
+      <div class="modal-overlay" id="importModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Import Quiz</h3>
+            <button class="icon-button" onclick="uiController.closeModal('importModal')">
+              <i data-lucide="x" width="24" height="24"></i>
+            </button>
+          </div>
+          <div class="modal-content">
+            <div class="quiz-field">
+              <div class="quiz-field-label">Select Quiz File(s)</div>
+              <input type="file" accept=".json" id="importFile" multiple onchange="importController.handleFileSelect(event)" />
+              <div style="opacity:.8; font-size: 12px; margin-top: 6px;">Tip: Select multiple .json files to import them in bulk.</div>
+            </div>
+            <button class="btn-primary" style="margin-top: 20px; width: 100%" onclick="importController.importQuiz()">
+              Import
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings: Theme Modal -->
+      <div class="modal-overlay" id="settingsThemeModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Theme</h3>
+          </div>
+          <div class="modal-content">
+            <div class="settings-grid">
+              <section class="settings-section">
+                <div class="settings-row">
+                  <label for="themeSelect" style="min-width: 120px">Appearance</label>
+                  <select id="themeSelect" class="settings-select" onchange="uiController.applyTheme(this.value)">
+                    <option value="dark">Dark</option>
+                    <option value="light">Light</option>
+                  </select>
+                </div>
+              </section>
+            </div>
+          </div>
+          <div class="modal-actions"></div>
+        </div>
+      </div>
+
+      <!-- Settings: Data Modal -->
+      <div class="modal-overlay" id="settingsDataModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Data Management</h3>
+            <button class="icon-button" title="Help" onclick="uiController.openSettingsDataHelp()" style="margin-left:auto;">
+              <i data-lucide="help-circle" width="24" height="24"></i>
+            </button>
+          </div>
+          <div class="modal-content">
+            <div class="settings-grid">
+              <div class="settings-row" style="flex-wrap: wrap; gap: var(--size-s); align-items: flex-start;">
+                <div style="min-width: 260px;">
+                  <div class="quiz-field-label" style="margin-bottom: 8px;">Quiz Types to Export</div>
+                  <div style="display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; align-items: center;">
+                    <label style="display:flex; gap:10px; align-items:center; font-size:16px; line-height:1;">
+                      <input type="checkbox" id="exportTypeMc" style="width:18px; height:18px;">
+                      <span>Multiple Choice</span>
+                    </label>
+                    <label style="display:flex; gap:10px; align-items:center; font-size:16px; line-height:1;">
+                      <input type="checkbox" id="exportTypeEj" style="width:18px; height:18px;">
+                      <span>Emoji</span>
+                    </label>
+                    <label style="display:flex; gap:10px; align-items:center; font-size:16px; line-height:1;">
+                      <input type="checkbox" id="exportTypeRd" style="width:18px; height:18px;">
+                      <span>Riddle</span>
+                    </label>
+                    <label style="display:flex; gap:10px; align-items:center; font-size:16px; line-height:1;">
+                      <input type="checkbox" id="exportTypeWs" style="width:18px; height:18px;">
+                      <span>Word Scramble</span>
+                    </label>
+                  </div>
+                  <div style="opacity:.8; font-size:12px; margin-top:6px;">Tip: Leave all unchecked to export everything.</div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px; min-width:260px;">
+                  <div class="sidebar-label">Actions</div>
+                  <div style="display:flex; gap: var(--size-s); flex-wrap: wrap; align-items: center;">
+                  <button class="btn-secondary" onclick="uiController.exportAllData()">
+                    <i data-lucide="download" width="20" height="20"></i>
+                    Export (ZIP)
+                  </button>
+                  <label class="btn-secondary" for="importDataFileModal" style="display: inline-flex; align-items: center; gap: var(--size-xs); cursor: pointer;">
+                  <i data-lucide="upload" width="20" height="20"></i>
+                  Import Data (JSON/ZIP)
+                </label>
+                <input id="importDataFileModal" class="settings-input" type="file" accept=".json,.zip" multiple style="display:none" onchange="uiController.importAllDataFromFiles(event)" />
+                <button class="btn-secondary danger" onclick="uiController.clearAllData()">
+                  <i data-lucide="trash-2" width="20" height="20"></i>
+                  Clear All Data
+                </button>
+                  </div>
+                </div>
+              </div>
+
+              
+            </div>
+          </div>
+          <div class="modal-actions"></div>
+        </div>
+      </div>
+
+      <!-- Settings: Data Help Modal -->
+      <div class="modal-overlay" id="settingsDataHelpModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Data Management Help</h3>
+            <button class="icon-button" onclick="uiController.closeModal('settingsDataHelpModal')">
+              <i data-lucide="x" width="24" height="24"></i>
+            </button>
+          </div>
+          <div class="modal-content">
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <section>
+                <div class="sidebar-label" style="margin-bottom:6px;">Export</div>
+                <p style="margin:0 0 6px 0; opacity:.9;">Choose specific quiz types or leave all unchecked to export everything. The download is a ZIP with subfolders by type to keep things tidy and avoid oversized files.</p>
+              </section>
+              <section>
+                <div class="sidebar-label" style="margin-bottom:6px;">Import</div>
+                <ul style="margin:0 0 6px 16px; padding:0; line-height:1.5;">
+                  <li>Select one or more <code>.json</code> and/or <code>.zip</code> files.</li>
+                  <li>We will import all valid quizzes and show a summary of anything that failed.</li>
+                  <li>ZIPs can contain many JSON quizzes inside (organized however you like).</li>
+                </ul>
+              </section>
+              <section>
+                <div class="sidebar-label" style="margin-bottom:6px;">After Import</div>
+                <p style="margin:0 0 6px 0; opacity:.9;">You can place newly imported quizzes into a folder. For big batches, creating a folder beforehand or right after import helps keep everything organized.</p>
+              </section>
+              <section>
+                <div class="sidebar-label" style="margin-bottom:6px;">Tips</div>
+                <ul style="margin:0 0 6px 16px; padding:0; line-height:1.5;">
+                  <li>Export by type if you only need certain quizzes.</li>
+                  <li>Prefer ZIP for large backups.</li>
+                  <li>Group related quizzes into folders to find them quickly later.</li>
+                </ul>
+              </section>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn-primary" onclick="uiController.closeModal('settingsDataHelpModal')">Got it</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings: Help Modal -->
+      <div class="modal-overlay" id="settingsHelpModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Help</h3>
+          </div>
+          <div class="modal-content">
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <section>
+                <div class="sidebar-label" style="margin-bottom:6px;">Home</div>
+                <ul style="margin:0 0 6px 16px; padding:0; line-height:1.5;">
+                  <li>Use <strong>Import</strong> to bring in quizzes from .json files. You can select multiple files for batch import.</li>
+                  <li>Use <strong>Create</strong> to make a new quiz. Choose a type: Multiple Choice, Emoji, Riddle, or Word Scramble.</li>
+                  <li>Use <strong>Play</strong> to try a quiz. Choose a folder and quiz, or use <strong>Random Play</strong> to pick one automatically.</li>
+                </ul>
+              </section>
+              <section>
+                <div class="sidebar-label" style="margin-bottom:6px;">Folders</div>
+                <ul style="margin:0 0 6px 16px; padding:0; line-height:1.5;">
+                  <li>Create folders to organize quizzes.</li>
+                  <li>From folder options, you can rename or delete the folder.</li>
+                  <li>Open a folder to see its quizzes and manage them (play, rename, export, remove from folder, delete).</li>
+                </ul>
+              </section>
+              <section>
+                <div class="sidebar-label" style="margin-bottom:6px;">Quiz Editor</div>
+                <ul style="margin:0 0 6px 16px; padding:0; line-height:1.5;">
+                  <li>Navigate questions using the arrows; add questions with the plus button.</li>
+                  <li>Open <strong>Options</strong> to jump to a question, play the quiz, lock/unlock editing, or delete.</li>
+                  <li>When playing, your score appears at the top and answers are checked with feedback.</li>
+                </ul>
+              </section>
+              <section>
+                <div class="sidebar-label" style="margin-bottom:6px;">Data Management</div>
+                <ul style="margin:0 0 6px 16px; padding:0; line-height:1.5;">
+                  <li>Export all data (as ZIP) or import from JSON/ZIP files. You can filter exports by quiz type.</li>
+                  <li>Batch import lets you place new quizzes into a folder right after import.</li>
+                  <li>See the <strong>?</strong> in Data Management for a detailed guide.</li>
+                </ul>
+              </section>
+              <section>
+                <div class="sidebar-label" style="margin-bottom:6px;">Shortcuts & Tips</div>
+                <ul style="margin:0 0 6px 16px; padding:0; line-height:1.5;">
+                  <li>Use the Search bar on Home to find quizzes quickly.</li>
+                  <li>Keep related quizzes in folders to stay organized.</li>
+                  <li>Lock a quiz in the editor to prevent accidental edits.</li>
+                </ul>
+              </section>
+            </div>
+          </div>
+          <div class="modal-actions"></div>
+        </div>
+      </div>
+
+      <!-- Settings: About Modal -->
+      <div class="modal-overlay" id="settingsAboutModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">About</h3>
+          </div>
+          <div class="modal-content">
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <section>
+                <div class="sidebar-label" style="margin-bottom:6px;">Quiz Manager</div>
+                <p style="margin:0; opacity:.9;">Create, manage, and play biblical quizzes. Works offline and keeps your data private.</p>
+              </section>
+              <section>
+                <div class="sidebar-label" style="margin-bottom:6px;">Data & Privacy</div>
+                <ul style="margin:0 0 6px 16px; padding:0; line-height:1.5;">
+                  <li>Your quizzes and folders are stored locally using IndexedDB.</li>
+                  <li>No accounts, no cloud sync by default.</li>
+                  <li>Use Data Management to export/import your data anytime.</li>
+                </ul>
+              </section>
+              <section>
+                <div class="sidebar-label" style="margin-bottom:6px;">Credits</div>
+                <ul style="margin:0 0 6px 16px; padding:0; line-height:1.5;">
+                  <li>Icons: Lucide</li>
+                  <li>Bundler: Vite</li>
+                  <li>ZIP: JSZip</li>
+                  <li>Routing: Navigo</li>
+                </ul>
+              </section>
+              <section>
+                <div class="sidebar-label" style="margin-bottom:6px;">Version</div>
+                <p style="margin:0; opacity:.9;">1.7.0</p>
+              </section>
+            </div>
+          </div>
+          <div class="modal-actions"></div>
+        </div>
+      </div>
+
+
+      <div class="modal-overlay" id="importResultModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Quiz Imported</h3>
+            <button class="icon-button" onclick="uiController.closeModal('importResultModal')">
+              <i data-lucide="x" width="24" height="24"></i>
+            </button>
+          </div>
+          <div class="modal-content">
+            <div class="quiz-field">
+              <div class="quiz-field-label">Select Folder (optional)</div>
+              <select
+                id="importResultFolderSelect"
+                style="
+                  width: 100%;
+                  padding: 10px;
+                  background: var(--color-background);
+                  color: var(--color-text-strong);
+                  border: 1px solid var(--color-stroke-weak);
+                  border-radius: 8px;
+                "
+              >
+                <option value="">No Folder</option>
+              </select>
+              <div style="display:flex; gap: 8px; align-items:center; margin-top:8px;">
+                <button class="btn-secondary" onclick="folderController.openCreateFolderModal()">
+                  <i data-lucide="folder-plus" width="16" height="16"></i>
+                  New Folder
+                </button>
+                <span style="font-size:12px; opacity:.8;">Tip: Keep related imports together by placing them into a folder.</span>
+              </div>
+            </div>
+            <div class="modal-actions">
+              <button class="btn-secondary" onclick="uiController.confirmImportCancel()">Cancel</button>
+              <button class="btn-secondary" onclick="uiController.confirmImportEdit()">Edit</button>
+              <button class="btn-primary" onclick="uiController.confirmImportPlay()">Play</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-overlay" id="createModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Create New Quiz</h3>
+            <button class="icon-button" onclick="uiController.closeModal('createModal')">
+              <i data-lucide="x" width="24" height="24"></i>
+            </button>
+          </div>
+          <div class="modal-content">
+            <div class="quiz-field">
+              <div class="quiz-field-label">Quiz Name</div>
+              <input type="text" id="quizName" placeholder="Enter quiz name..." />
+            </div>
+            <div class="quiz-field">
+              <div class="quiz-field-label">Quiz Type</div>
+              <select
+                id="quizType"
+                style="
+                  width: 100%;
+                  padding: 10px;
+                  background: var(--color-background);
+                  color: var(--color-text-strong);
+                  border: 1px solid var(--color-stroke-weak);
+                  border-radius: 8px;
+                "
+              >
+                <option value="mc-quiz">Multiple Choice</option>
+                <option value="ej-quiz">Emoji</option>
+                <option value="rd-quiz">Riddle</option>
+                <option value="ws-quiz">Word Scramble</option>
+              </select>
+            </div>
+            <div class="quiz-field">
+              <div class="quiz-field-label">Select Folder</div>
+              <select
+                id="folderSelect"
+                style="
+                  width: 100%;
+                  padding: 10px;
+                  background: var(--color-background);
+                  color: var(--color-text-strong);
+                  border: 1px solid var(--color-stroke-weak);
+                  border-radius: 8px;
+                "
+                onchange="folderController.onCreateFolderSelectChange()"
+              >
+                <option value="">No Folder</option>
+              </select>
+            </div>
+            <button class="btn-primary" style="margin-top: 20px; width: 100%" onclick="quizController.createNewQuiz()">
+              Create Quiz
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-overlay" id="playModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Play Quiz</h3>
+            <button class="icon-button" onclick="uiController.closeModal('playModal')">
+              <i data-lucide="x" width="24" height="24"></i>
+            </button>
+          </div>
+          <div class="modal-content">
+            <div class="quiz-field">
+              <div class="quiz-field-label">Select Folder</div>
+              <select
+                id="playFolderSelect"
+                style="
+                  width: 100%;
+                  padding: 10px;
+                  background: var(--color-background);
+                  color: var(--color-text-strong);
+                  border: 1px solid var(--color-stroke-weak);
+                  border-radius: 8px;
+                "
+                onchange="playController.loadQuizzes()"
+              >
+                <option value="">Select a folder...</option>
+              </select>
+            </div>
+            <div class="quiz-field">
+              <div class="quiz-field-label">Select Quiz</div>
+              <select
+                id="playQuizSelect"
+                style="
+                  width: 100%;
+                  padding: 10px;
+                  background: var(--color-background);
+                  color: var(--color-text-strong);
+                  border: 1px solid var(--color-stroke-weak);
+                  border-radius: 8px;
+                "
+              >
+                <option value="">Select a quiz...</option>
+              </select>
+            </div>
+            <div class="modal-actions" style="display: flex; gap: var(--size-s); margin-top: 20px;">
+              <button class="btn-secondary" style="flex: 1" onclick="playController.randomPlay()">
+                <i data-lucide="shuffle" width="20" height="20"></i>
+                Random Play
+              </button>
+              <button class="btn-primary" style="flex: 1" onclick="playController.startQuiz()">
+                <i data-lucide="play-circle" width="20" height="20"></i>
+                Start Quiz
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-overlay" id="quizOptionsModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Quiz Options</h3>
+            <button class="icon-button" onclick="uiController.closeModal('quizOptionsModal')">
+              <i data-lucide="x" width="24" height="24"></i>
+            </button>
+          </div>
+          <div class="modal-content">
+            <div class="folder-item" onclick="uiController.actionQuizJump()">
+              <i data-lucide="move-vertical" width="20" height="20"></i>
+              <span>Jump to Question</span>
+            </div>
+            <div class="folder-item" onclick="uiController.actionQuizPlay()">
+              <i data-lucide="play-circle" width="20" height="20"></i>
+              <span>Play Quiz</span>
+            </div>
+            <div class="folder-item" onclick="uiController.actionQuizLock()">
+              <i data-lucide="lock" width="20" height="20"></i>
+              <span>Lock Quiz</span>
+            </div>
+            <div class="folder-item delete-item" onclick="uiController.actionQuizDeleteQuestion()">
+              <i data-lucide="trash-2" width="20" height="20"></i>
+              <span>Delete Question</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Quiz Options Modal -->
+      <div class="modal-overlay" id="recentQuizOptionsModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Recent Quiz</h3>
+            <button class="icon-button" onclick="uiController.closeModal('recentQuizOptionsModal')">
+              <i data-lucide="x" width="24" height="24"></i>
+            </button>
+          </div>
+          <div class="modal-content">
+            <div class="folder-item" onclick="uiController.recentPlay()">
+              <i data-lucide="play-circle" width="20" height="20"></i>
+              <span>Play Quiz</span>
+            </div>
+            <div class="folder-item" onclick="uiController.recentAddToFolder()">
+              <i data-lucide="folder-plus" width="20" height="20"></i>
+              <span>Add to Folder</span>
+            </div>
+            <div class="folder-item" onclick="uiController.recentRename()">
+              <i data-lucide="edit-3" width="20" height="20"></i>
+              <span>Rename</span>
+            </div>
+            <div class="folder-item" onclick="uiController.recentExport()">
+              <i data-lucide="download" width="20" height="20"></i>
+              <span>Export</span>
+            </div>
+            <div class="folder-item delete-item" onclick="uiController.recentDelete()">
+              <i data-lucide="trash-2" width="20" height="20"></i>
+              <span>Delete</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent: Add to Folder Modal -->
+      <div class="modal-overlay" id="recentAddToFolderModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Add to Folder</h3>
+            <button class="icon-button" onclick="uiController.closeModal('recentAddToFolderModal')">
+              <i data-lucide="x" width="24" height="24"></i>
+            </button>
+          </div>
+          <div class="modal-content">
+            <div class="quiz-field">
+              <div class="quiz-field-label">Select Folder</div>
+              <select id="recentFolderSelect" style="width: 100%; padding: 10px; background: var(--color-background); color: var(--color-text-strong); border: 1px solid var(--color-stroke-weak); border-radius: 8px;"></select>
+            </div>
+            <div class="modal-actions">
+              <button class="btn-secondary" onclick="uiController.closeModal('recentAddToFolderModal')">Cancel</button>
+              <button class="btn-primary" onclick="uiController.confirmRecentAddToFolder()">Add</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Folder Options Modal -->
+      <div class="modal-overlay" id="folderOptionsModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Folder Options</h3>
+            <button class="icon-button" onclick="uiController.closeModal('folderOptionsModal')">
+              <i data-lucide="x" width="24" height="24"></i>
+            </button>
+          </div>
+          <div class="modal-content">
+            <div class="folder-item" onclick="folderController.renameActiveFolder()">
+              <i data-lucide="edit-3" width="20" height="20"></i>
+              <span>Rename Folder</span>
+            </div>
+            <div class="folder-item delete-item" onclick="folderController.deleteActiveFolder()">
+              <i data-lucide="trash-2" width="20" height="20"></i>
+              <span>Delete Folder</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create Folder Modal -->
+      <div class="modal-overlay" id="createFolderModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Create Folder</h3>
+            <button class="icon-button" onclick="uiController.closeModal('createFolderModal')">
+              <i data-lucide="x" width="24" height="24"></i>
+            </button>
+          </div>
+          <div class="modal-content">
+            <div class="quiz-field">
+              <div class="quiz-field-label">Folder Name</div>
+              <input type="text" id="newFolderNameInput" placeholder="Enter folder name..." onkeypress="if(event.key==='Enter'){folderController.confirmCreateFolder()}" />
+            </div>
+            <div class="modal-actions">
+              <button class="btn-secondary" onclick="uiController.closeModal('createFolderModal')">Cancel</button>
+              <button class="btn-primary" onclick="folderController.confirmCreateFolder()">Create</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Folder Quiz Options Modal -->
+      <div class="modal-overlay" id="folderQuizOptionsModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Quiz Options</h3>
+            <button class="icon-button" onclick="uiController.closeModal('folderQuizOptionsModal')">
+              <i data-lucide="x" width="24" height="24"></i>
+            </button>
+          </div>
+          <div class="modal-content">
+            <div class="folder-item" onclick="uiController.folderQuizPlay()">
+              <i data-lucide="play-circle" width="20" height="20"></i>
+              <span>Play Quiz</span>
+            </div>
+            <div class="folder-item" onclick="uiController.folderQuizRename()">
+              <i data-lucide="edit-3" width="20" height="20"></i>
+              <span>Rename</span>
+            </div>
+            <div class="folder-item" onclick="uiController.folderQuizExport()">
+              <i data-lucide="download" width="20" height="20"></i>
+              <span>Export</span>
+            </div>
+            <div class="folder-item" onclick="uiController.folderQuizRemoveFromFolder()">
+              <i data-lucide="folder-minus" width="20" height="20"></i>
+              <span>Remove from Folder</span>
+            </div>
+            <div class="folder-item delete-item" onclick="uiController.folderQuizDelete()">
+              <i data-lucide="trash-2" width="20" height="20"></i>
+              <span>Delete</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+             <!-- Search Result Options Modal -->
+       <div class="modal-overlay" id="searchResultOptionsModal">
+         <div class="modal">
+           <div class="modal-header">
+             <h3 class="modal-title">Search Result Options</h3>
+             <button class="icon-button" onclick="uiController.closeModal('searchResultOptionsModal')">
+               <i data-lucide="x" width="24" height="24"></i>
+             </button>
+           </div>
+           <div class="modal-content">
+             <div class="folder-item" onclick="uiController.searchResultPlay()">
+               <i data-lucide="play-circle" width="20" height="20"></i>
+               <span>Play Quiz</span>
+             </div>
+             <div class="folder-item" onclick="uiController.searchResultEdit()">
+               <i data-lucide="edit-3" width="20" height="20"></i>
+               <span>Edit Quiz</span>
+             </div>
+             <div class="folder-item" onclick="uiController.searchResultAddToFolder()">
+               <i data-lucide="folder-plus" width="20" height="20"></i>
+               <span>Add to Folder</span>
+             </div>
+             <div class="folder-item" onclick="uiController.searchResultExport()">
+               <i data-lucide="download" width="20" height="20"></i>
+               <span>Export</span>
+             </div>
+                         <div class="folder-item delete-item" onclick="uiController.searchResultDelete()">
+              <i data-lucide="trash-2" width="20" height="20"></i>
+              <span>Delete</span>
+            </div>
+           </div>
+         </div>
+       </div>
+
+       <!-- Search Result: Add to Folder Modal -->
+       <div class="modal-overlay" id="searchResultAddToFolderModal">
+         <div class="modal">
+           <div class="modal-header">
+             <h3 class="modal-title">Add to Folder</h3>
+             <button class="icon-button" onclick="uiController.closeModal('searchResultAddToFolderModal')">
+               <i data-lucide="x" width="24" height="24"></i>
+             </button>
+           </div>
+           <div class="modal-content">
+             <div class="quiz-field">
+               <div class="quiz-field-label">Select Folder</div>
+               <select id="searchResultFolderSelect" style="width: 100%; padding: 10px; background: var(--color-background); color: var(--color-text-strong); border: 1px solid var(--color-stroke-weak); border-radius: 8px;"></select>
+             </div>
+             <div class="modal-actions">
+               <button class="btn-secondary" onclick="uiController.closeModal('searchResultAddToFolderModal')">Cancel</button>
+               <button class="btn-primary" onclick="uiController.confirmSearchResultAddToFolder()">Add</button>
+             </div>
+           </div>
+         </div>
+       </div>
+
+      <div class="modal-overlay" id="jumpToQuestionModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Jump to Question</h3>
+            <button class="icon-button" onclick="uiController.closeModal('jumpToQuestionModal')">
+              <i data-lucide="x" width="24" height="24"></i>
+            </button>
+          </div>
+          <div class="modal-content">
+            <div class="quiz-field">
+              <div class="quiz-field-label">Question Number</div>
+              <input type="number" id="jumpQuestionInput" min="1" value="1" />
+            </div>
+            <div class="modal-actions">
+              <button class="btn-secondary" onclick="uiController.closeModal('jumpToQuestionModal')">Cancel</button>
+              <button class="btn-primary" onclick="uiController.confirmJumpToQuestion()">Jump</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unsaved Changes Modal -->
+      <div class="modal-overlay" id="unsavedChangesModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Unsaved Changes</h3>
+            <button class="icon-button" onclick="uiController.cancelUnsavedExit()">
+              <i data-lucide="x" width="24" height="24"></i>
+            </button>
+          </div>
+          <div class="modal-content">
+            <p>You have unsaved changes. Are you sure you want to exit?</p>
+            <div class="modal-actions">
+              <button class="btn-secondary" onclick="uiController.cancelUnsavedExit()">Cancel</button>
+              <button class="btn-secondary" onclick="uiController.confirmExitWithoutSaving()">Exit</button>
+              <button class="btn-primary" onclick="uiController.confirmSaveAndExit()">Save & Exit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-overlay" id="confirmDeleteModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Delete Question</h3>
+            <button class="icon-button" onclick="uiController.closeModal('confirmDeleteModal')">
+              <i data-lucide="x" width="24" height="24"></i>
+            </button>
+          </div>
+          <div class="modal-content">
+            <p>Are you sure you want to delete the current question?</p>
+            <div class="modal-actions">
+              <button class="btn-secondary" onclick="uiController.cancelDeleteQuestion()">Cancel</button>
+              <button class="btn-primary" style="background: var(--color-error);" onclick="uiController.confirmDeleteQuestion()">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question Feedback Modal -->
+      <div class="modal-overlay" id="questionFeedbackModal">
+        <div class="modal">
+          <div class="modal-content">
+            <div class="feedback-answer">
+              <div id="feedbackVerdictText" class="feedback-text" style="font-weight: 700;"></div>
+              <div id="feedbackAnswerText" class="feedback-text"></div>
+            </div>
+            <div class="feedback-references" id="feedbackReferencesContainer" style="display: none;">
+              <div id="feedbackReferencesText" class="feedback-text"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Import Result Modal -->
+      <div class="modal-overlay" id="dataImportResultModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Data Import Summary</h3>
+            <button class="icon-button" onclick="uiController.closeModal('dataImportResultModal')">
+              <i data-lucide="x" width="24" height="24"></i>
+            </button>
+          </div>
+          <div class="modal-content">
+            <p id="dataImportSummaryText" style="margin-bottom:12px;">Imported 0 quizzes.</p>
+            <div id="dataImportFailedListContainer" style="display:none">
+              <div class="quiz-field-label" style="margin-bottom:6px;">Failed files</div>
+              <ul id="dataImportFailedList" style="max-height:180px; overflow:auto; padding-left:18px; margin:0;"></ul>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn-primary" onclick="uiController.closeModal('dataImportResultModal')">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js').then(reg => {
+            console.log('[SW] Registered with scope:', reg.scope);
+            if (reg.waiting) {
+              reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+            }
+            reg.addEventListener('updatefound', () => {
+              const newWorker = reg.installing;
+              if (!newWorker) return;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  newWorker.postMessage({ type: 'SKIP_WAITING' });
+                }
+              });
+            });
+          }).catch(err => console.warn('[SW] Registration failed:', err));
+        });
+      }
+    </script>
+  </body>
+  </html>
+
+
